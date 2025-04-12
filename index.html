@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sixim Shortener - URL Shortener</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --text-color: #2d3436;
+            --background-color: #f5f6fa;
+            --card-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #00b894;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 span {
+            font-weight: 300;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #636e72;
+        }
+
+        main {
+            background-color: var(--card-color);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .url-form {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+
+        .url-form input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 6px 0 0 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .url-form input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .url-form button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 0 6px 6px 0;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .url-form button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #result {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .shortened-url {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .shortened-url a {
+            flex: 1;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .shortened-url a:hover {
+            text-decoration: underline;
+        }
+
+        #copy-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #copy-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #history {
+            margin-top: 2rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .history-item-urls {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .original-url {
+            font-size: 0.9rem;
+            color: #636e72;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 400px;
+        }
+
+        .short-url {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .short-url:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .url-form {
+                flex-direction: column;
+            }
+            
+            .url-form input {
+                border-radius: 6px;
+                margin-bottom: 10px;
+            }
+            
+            .url-form button {
+                border-radius: 6px;
+            }
+            
+            .shortened-url {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            #copy-btn {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-link"></i> Sixim<span>Shortener</span></h1>
+            <p>Shorten your URLs with ease</p>
+        </header>
+        
+        <main>
+            <div class="url-form">
+                <input type="url" id="url-input" placeholder="Enter your long URL here" required>
+                <button id="shorten-btn">Shorten</button>
+            </div>
+            
+            <div id="result" class="hidden">
+                <h3>Your shortened URL:</h3>
+                <div class="shortened-url">
+                    <a id="short-url" href="#" target="_blank"></a>
+                    <button id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+            </div>
+            
+            <div id="history" class="hidden">
+                <h3>Recent URLs</h3>
+                <div id="history-items"></div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2023 SiximShortener - Powered by Vercel</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlInput = document.getElementById('url-input');
+            const shortenBtn = document.getElementById('shorten-btn');
+            const resultDiv = document.getElementById('result');
+            const shortUrlElement = document.getElementById('short-url');
+            const copyBtn = document.getElementById('copy-btn');
+            const historyDiv = document.getElementById('history');
+            const historyItems = document.getElementById('history-items');
+            
+            // Load history from localStorage
+            loadHistory();
+            
+            shortenBtn.addEventListener('click', async () => {
+                const longUrl = urlInput.value.trim();
+                
+                if (!isValidUrl(longUrl)) {
+                    alert('Please enter a valid URL');
+                    return;
+                }
+                
+                try {
+                    shortenBtn.disabled = true;
+                    shortenBtn.textContent = 'Shortening...';
+                    
+                    const shortUrl = await shortenUrl(longUrl);
+                    
+                    shortUrlElement.textContent = shortUrl;
+                    shortUrlElement.href = shortUrl;
+                    resultDiv.classList.remove('hidden');
+                    
+                    // Save to history
+                    saveToHistory(longUrl, shortUrl);
+                    
+                    shortenBtn.disabled = false;
+                    shortenBtn.textContent = 'Shorten';
+                } catch (error) {
+                    console.error('Error shortening URL:', error);
+                    alert('Error shortening URL. Please try again.');
+                    shortenBtn.disabled = false;
+                    shortenBtn.textContent = 'Shorten';
+                }
+            });
+            
+            copyBtn.addEventListener('click', () => {
+                const shortUrl = shortUrlElement.textContent;
+                navigator.clipboard.writeText(shortUrl)
+                    .then(() => {
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalText;
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Could not copy text: ', err);
+                    });
+            });
+            
+            // Function to shorten URL
+            async function shortenUrl(longUrl) {
+                try {
+                    const response = await fetch('/api/shorten', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ url: longUrl }),
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to shorten URL');
+                    }
+                    
+                    const data = await response.json();
+                    return data.shortUrl;
+                } catch (error) {
+                    console.error('Error in shortenUrl:', error);
+                    throw error;
+                }
+            }
+            
+            // Function to validate URL
+            function isValidUrl(string) {
+                try {
+                    new URL(string);
+                    return true;
+                } catch (_) {
+                    return false;
+                }
+            }
+            
+            // Function to save URL to history
+            function saveToHistory(longUrl, shortUrl) {
+                let history = JSON.parse(localStorage.getItem('urlHistory') || '[]');
+                
+                // Add to beginning of array
+                history.unshift({
+                    longUrl,
+                    shortUrl,
+                    timestamp: Date.now()
+                });
+                
+                // Keep only the latest 10 items
+                history = history.slice(0, 10);
+                
+                localStorage.setItem('urlHistory', JSON.stringify(history));
+                
+                // Update the history display
+                loadHistory();
+            }
+            
+            // Function to load history from localStorage
+            function loadHistory() {
+                const history = JSON.parse(localStorage.getItem('urlHistory') || '[]');
+                
+                if (history.length === 0) {
+                    historyDiv.classList.add('hidden');
+                    return;
+                }
+                
+                historyDiv.classList.remove('hidden');
+                historyItems.innerHTML = '';
+                
+                history.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    historyItem.innerHTML = `
+                        <div class="history-item-urls">
+                            <div class="original-url" title="${item.longUrl}">${item.longUrl}</div>
+                            <a href="${item.shortUrl}" class="short-url" target="_blank">${item.shortUrl}</a>
+                        </div>
+                        <button class="copy-history-btn" data-url="${item.shortUrl}">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    `;
+                    
+                    historyItems.appendChild(historyItem);
+                });
+                
+                // Add event listeners to copy buttons
+                document.querySelectorAll('.copy-history-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const url = btn.getAttribute('data-url');
+                        navigator.clipboard.writeText(url)
+                            .then(() => {
+                                const originalHTML = btn.innerHTML;
+                                btn.innerHTML = '<i class="fas fa-check"></i>';
+                                setTimeout(() => {
+                                    btn.innerHTML = originalHTML;
+                                }, 2000);
+                            })
+                            .catch(err => {
+                                console.error('Could not copy text: ', err);
+                            });
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
