@@ -634,7 +634,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M3 3h18v18H3V3zm16 16V5H5v14h14zM11 7h2v2h-2V7zm0 4h2v6h-2v-6z" fill="#fff"/>
+                            <path d="M3 3h18v18H3V3zm16 16V5H5v14h14zM12 5h2v2h-2V5zm0 4h2v6h-2v-6z" fill="#fff"/>
                         </svg>
                     </div>
                     <h3>Multiple Models</h3>
@@ -670,7 +670,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M21 11c0 5.55-3.84 10.74-9 12-5.16-1.26-9-6.45-9-12V5l9-4 9 4v6m-9 10c3.75-1 7-5.46 7-9.78V6.3l-7-3.12L5 6.3v4.92C5 15.54 8.25 20 12 21m-2-4v-6h4v2h-2v4h-2z" fill="#fff"/>
+                            <path d="M21 11c0 5.55-3.84 10.74-9 12-5.16-1.26-9-6.45-9-12V5l9-4 9 4v6h4.01z" fill="#fff"/>
                         </svg>
                     </div>
                     <h3>Secure Implementation</h3>
@@ -762,28 +762,22 @@
                     <span class="code-label">JavaScript</span>
                     <button class="copy-btn" data-code="js-setup">Copy</button>
                 </div>
-<pre><code><span class="green">// Include the SimixChat API in your project</span>
-<span class="blue">const</span> simixchat = <span class="blue">new</span> <span class="yellow">SimixChatAPI</span>({
-  <span class="purple">apiKey</span>: <span class="orange">'your_api_key'</span>, <span class="comment">// Optional, not required for free tier</span>
-  <span class="purple">model</span>: <span class="orange">'llama-3-70b-8192'</span> <span class="comment">// Default model</span>
-});</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-header">
-                    <span class="code-label">Python</span>
-                    <button class="copy-btn" data-code="py-setup">Copy</button>
-                </div>
-<pre><code><span class="green"># Install the package</span>
-<span class="blue">pip</span> install simixchat
-
-<span class="green"># Import and initialize</span>
-<span class="blue">from</span> simixchat <span class="blue">import</span> SimixChatAPI
-
-simixchat = <span class="yellow">SimixChatAPI</span>(
-    api_key=<span class="orange">'your_api_key'</span>,  <span class="comment"># Optional, not required for free tier</span>
-    model=<span class="orange">'llama-3-70b-8192'</span>  <span class="comment"># Default model</span>
-)</code></pre>
+<pre><code><span class="green">// Direct usage with fetch API - no library needed</span>
+<span class="blue">async function</span> <span class="yellow">callSimixChat</span>(messages, model = <span class="orange">'llama-3-8b-8192'</span>) {
+  <span class="blue">const</span> response = <span class="blue">await</span> <span class="yellow">fetch</span>(<span class="orange">'https://simixchat.vercel.app'</span>, {
+    <span class="purple">method</span>: <span class="orange">'POST'</span>,
+    <span class="purple">headers</span>: {
+      <span class="orange">'Content-Type'</span>: <span class="orange">'application/json'</span>
+    },
+    <span class="purple">body</span>: <span class="yellow">JSON.stringify</span>({
+      <span class="purple">model</span>: model,
+      <span class="purple">messages</span>: messages,
+      <span class="purple">temperature</span>: 0.7
+    })
+  });
+  
+  <span class="blue">return</span> <span class="blue">await</span> response.<span class="yellow">json</span>();
+}</code></pre>
             </div>
 
             <h3>Basic Chat Completion</h3>
@@ -795,37 +789,19 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
                     <button class="copy-btn" data-code="js-chat">Copy</button>
                 </div>
 <pre><code><span class="blue">async function</span> <span class="yellow">chatWithAI</span>() {
-  <span class="blue">const</span> response = <span class="blue">await</span> simixchat.<span class="yellow">createChatCompletion</span>({
-    <span class="purple">messages</span>: [
-      { <span class="purple">role</span>: <span class="orange">'system'</span>, <span class="purple">content</span>: <span class="orange">'You are a helpful assistant.'</span> },
-      { <span class="purple">role</span>: <span class="orange">'user'</span>, <span class="purple">content</span>: <span class="orange">'Tell me about quantum computing.'</span> }
-    ],
-    <span class="purple">model</span>: <span class="orange">'llama-3-8b-8192'</span>, <span class="comment">// Optional: override the default model</span>
-    <span class="purple">max_tokens</span>: <span class="blue">500</span>,
-    <span class="purple">temperature</span>: <span class="blue">0.7</span>
-  });
-
-  <span class="blue">console</span>.<span class="yellow">log</span>(response.<span class="purple">choices</span>[<span class="blue">0</span>].<span class="purple">message</span>.<span class="purple">content</span>);
+  <span class="blue">const</span> messages = [
+    { <span class="purple">role</span>: <span class="orange">'system'</span>, <span class="purple">content</span>: <span class="orange">'You are a helpful assistant.'</span> },
+    { <span class="purple">role</span>: <span class="orange">'user'</span>, <span class="purple">content</span>: <span class="orange">'Tell me about quantum computing.'</span> }
+  ];
+  
+  <span class="blue">try</span> {
+    <span class="blue">const</span> response = <span class="blue">await</span> <span class="yellow">callSimixChat</span>(messages, <span class="orange">'llama-3-8b-8192'</span>);
+    <span class="blue">console</span>.<span class="yellow">log</span>(response.<span class="purple">choices</span>[<span class="blue">0</span>].<span class="purple">message</span>.<span class="purple">content</span>);
+    <span class="blue">return</span> response.<span class="purple">choices</span>[<span class="blue">0</span>].<span class="purple">message</span>.<span class="purple">content</span>;
+  } <span class="blue">catch</span>(error) {
+    <span class="blue">console</span>.<span class="yellow">error</span>(<span class="orange">'Error calling SimixChat API:'</span>, error);
+  }
 }</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-header">
-                    <span class="code-label">Python</span>
-                    <button class="copy-btn" data-code="py-chat">Copy</button>
-                </div>
-<pre><code><span class="blue">async def</span> <span class="yellow">chat_with_ai</span>():
-    response = <span class="blue">await</span> simixchat.<span class="yellow">create_chat_completion</span>(
-        messages=[
-            {<span class="purple">"role"</span>: <span class="orange">"system"</span>, <span class="purple">"content"</span>: <span class="orange">"You are a helpful assistant."</span>},
-            {<span class="purple">"role"</span>: <span class="orange">"user"</span>, <span class="purple">"content"</span>: <span class="orange">"Tell me about quantum computing."</span>}
-        ],
-        model=<span class="orange">"llama-3-8b-8192"</span>,  <span class="comment"># Optional: override the default model</span>
-        max_tokens=<span class="blue">500</span>,
-        temperature=<span class="blue">0.7</span>
-    )
-    
-    <span class="blue">print</span>(response.<span class="purple">choices</span>[<span class="blue">0</span>].<span class="purple">message</span>.<span class="purple">content</span>)</code></pre>
             </div>
 
             <h3>Streaming Responses</h3>
@@ -836,84 +812,57 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
                     <span class="code-label">JavaScript</span>
                     <button class="copy-btn" data-code="js-stream">Copy</button>
                 </div>
-<pre><code><span class="blue">async function</span> <span class="yellow">streamChatWithAI</span>() {
-  <span class="blue">const</span> stream = <span class="blue">await</span> simixchat.<span class="yellow">createChatCompletionStream</span>({
-    <span class="purple">messages</span>: [
-      { <span class="purple">role</span>: <span class="orange">'system'</span>, <span class="purple">content</span>: <span class="orange">'You are a helpful assistant.'</span> },
-      { <span class="purple">role</span>: <span class="orange">'user'</span>, <span class="purple">content</span>: <span class="orange">'Write a short story about a robot.'</span> }
-    ],
-    <span class="purple">model</span>: <span class="orange">'llama-3.1-8b-instant'</span>,
-    <span class="purple">stream</span>: <span class="blue">true</span>
-  });
-
-  <span class="blue">let</span> fullResponse = <span class="orange">''</span>;
+<pre><code><span class="blue">async function</span> <span class="yellow">streamChatWithAI</span>(onChunk) {
+  <span class="blue">const</span> messages = [
+    { <span class="purple">role</span>: <span class="orange">'system'</span>, <span class="purple">content</span>: <span class="orange">'You are a helpful assistant.'</span> },
+    { <span class="purple">role</span>: <span class="orange">'user'</span>, <span class="purple">content</span>: <span class="orange">'Write a short story about a robot.'</span> }
+  ];
   
-  <span class="blue">for await</span> (<span class="blue">const</span> chunk <span class="blue">of</span> stream) {
-    <span class="blue">const</span> content = chunk.<span class="purple">choices</span>[<span class="blue">0</span>].<span class="purple">delta</span>.<span class="purple">content</span> || <span class="orange">''</span>;
-    fullResponse += content;
+  <span class="blue">try</span> {
+    <span class="blue">const</span> response = <span class="blue">await</span> <span class="yellow">fetch</span>(<span class="orange">'https://simixchat.vercel.app'</span>, {
+      <span class="purple">method</span>: <span class="orange">'POST'</span>,
+      <span class="purple">headers</span>: {
+        <span class="orange">'Content-Type'</span>: <span class="orange">'application/json'</span>
+      },
+      <span class="purple">body</span>: <span class="yellow">JSON.stringify</span>({
+        <span class="purple">model</span>: <span class="orange">'llama-3.1-8b-instant'</span>,
+        <span class="purple">messages</span>: messages,
+        <span class="purple">stream</span>: <span class="blue">true</span>
+      })
+    });
+
+    <span class="blue">const</span> reader = response.<span class="purple">body</span>.<span class="yellow">getReader</span>();
+    <span class="blue">const</span> decoder = <span class="blue">new</span> <span class="yellow">TextDecoder</span>(<span class="orange">'utf-8'</span>);
+    <span class="blue">let</span> buffer = <span class="orange">''</span>;
+    <span class="blue">let</span> fullResponse = <span class="orange">''</span>;
+
+    <span class="blue">while</span> (<span class="blue">true</span>) {
+      <span class="blue">const</span> { done, value } = <span class="blue">await</span> reader.<span class="yellow">read</span>();
+      <span class="blue">if</span> (done) <span class="blue">break</span>;
+      
+      <span class="blue">const</span> chunk = decoder.<span class="yellow">decode</span>(value);
+      buffer += chunk;
+      
+      <span class="blue">const</span> lines = buffer.<span class="yellow">split</span>(<span class="orange">'\n'</span>);
+      buffer = lines.<span class="yellow">pop</span>() || <span class="orange">''</span>;  <span class="comment">// Keep the last incomplete line in buffer</span>
+      
+      <span class="blue">for</span> (<span class="blue">const</span> line <span class="blue">of</span> lines) {
+        <span class="blue">if</span> (line.<span class="yellow">startsWith</span>(<span class="orange">'data: '</span>) && line !== <span class="orange">'data: [DONE]'</span>) {
+          <span class="blue">const</span> data = <span class="yellow">JSON.parse</span>(line.<span class="yellow">substring</span>(<span class="blue">6</span>));
+          <span class="blue">const</span> content = data.<span class="purple">choices</span>[<span class="blue">0</span>].<span class="purple">delta</span>.<span class="purple">content</span> || <span class="orange">''</span>;
+          <span class="blue">if</span> (content) {
+            fullResponse += content;
+            onChunk(content);
+          }
+        }
+      }
+    }
     
-    <span class="comment">// Update UI with the incoming text</span>
-    <span class="blue">console</span>.<span class="yellow">log</span>(<span class="orange">'Chunk received:'</span>, content);
+    <span class="blue">return</span> fullResponse;
+  } <span class="blue">catch</span>(error) {
+    <span class="blue">console</span>.<span class="yellow">error</span>(<span class="orange">'Error streaming from SimixChat API:'</span>, error);
   }
 }</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-header">
-                    <span class="code-label">Python</span>
-                    <button class="copy-btn" data-code="py-stream">Copy</button>
-                </div>
-<pre><code><span class="blue">async def</span> <span class="yellow">stream_chat_with_ai</span>():
-    stream = <span class="blue">await</span> simixchat.<span class="yellow">create_chat_completion</span>(
-        messages=[
-            {<span class="purple">"role"</span>: <span class="orange">"system"</span>, <span class="purple">"content"</span>: <span class="orange">"You are a helpful assistant."</span>},
-            {<span class="purple">"role"</span>: <span class="orange">"user"</span>, <span class="purple">"content"</span>: <span class="orange">"Write a short story about a robot."</span>}
-        ],
-        model=<span class="orange">"llama-3.1-8b-instant"</span>,
-        stream=<span class="blue">True</span>
-    )
-    
-    full_response = <span class="orange">""</span>
-    
-    <span class="blue">async for</span> chunk <span class="blue">in</span> stream:
-        content = chunk.<span class="purple">choices</span>[<span class="blue">0</span>].<span class="purple">delta</span>.<span class="purple">content</span> or <span class="orange">""</span>
-        full_response += content
-        
-        <span class="comment"># Update UI with the incoming text</span>
-        <span class="blue">print</span>(content, end=<span class="orange">""</span>, flush=<span class="blue">True</span>)</code></pre>
-            </div>
-
-            <h3>Selecting Different Models</h3>
-            <p>Choose the most appropriate model for your specific use case:</p>
-
-            <div class="code-block">
-                <div class="code-header">
-                    <span class="code-label">JavaScript</span>
-                    <button class="copy-btn" data-code="js-models">Copy</button>
-                </div>
-<pre><code><span class="comment">// For general-purpose use</span>
-<span class="blue">await</span> simixchat.<span class="yellow">createChatCompletion</span>({
-  <span class="purple">messages</span>: [...],
-  <span class="purple">model</span>: <span class="orange">'llama-3-8b-8192'</span>
-});
-
-<span class="comment">// For code generation</span>
-<span class="blue">await</span> simixchat.<span class="yellow">createChatCompletion</span>({
-  <span class="purple">messages</span>: [...],
-  <span class="purple">model</span>: <span class="orange">'qwen-2.5-coder-32b'</span>
-});
-
-<span class="comment">// For complex reasoning tasks</span>
-<span class="blue">await</span> simixchat.<span class="yellow">createChatCompletion</span>({
-  <span class="purple">messages</span>: [...],
-  <span class="purple">model</span>: <span class="orange">'mistral-saba-24b'</span>
-});
-
-<span class="comment">// When performance is critical</span>
-<span class="blue">await</span> simixchat.<span class="yellow">createChatCompletion</span>({
-  <span class="purple">messages</span>: [...],
-  <span class="purple">model</span>: <span class="orange">'llama-3.1-8b-instant'</span>
-});</code></pre>
             </div>
 
             <h3>Connection to SimixChat API</h3>
@@ -924,13 +873,305 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
                     <span class="code-label">JavaScript - Connection Details</span>
                     <button class="copy-btn" data-code="js-connection">Copy</button>
                 </div>
-<pre><code><span class="blue">const</span> simixchat = <span class="blue">new</span> <span class="yellow">SimixChatAPI</span>({
-  <span class="purple">baseURL</span>: <span class="orange">'https://simixchat.vercel.app'</span>,
-  <span class="purple">model</span>: <span class="orange">'llama-3-70b-8192'</span>,
+<pre><code><span class="blue">const</span> SIMIXCHAT_API_URL = <span class="orange">'https://simixchat.vercel.app'</span>;
+
+<span class="comment">// Example request configuration</span>
+<span class="blue">const</span> requestOptions = {
+  <span class="purple">method</span>: <span class="orange">'POST'</span>,
   <span class="purple">headers</span>: {
     <span class="orange">'Content-Type'</span>: <span class="orange">'application/json'</span>
+  },
+  <span class="purple">body</span>: <span class="yellow">JSON.stringify</span>({
+    <span class="purple">model</span>: <span class="orange">'llama-3-70b-8192'</span>,
+    <span class="purple">messages</span>: [
+      { <span class="purple">role</span>: <span class="orange">'user'</span>, <span class="purple">content</span>: <span class="orange">'Hello!'</span> }
+    ]
+  })
+};</code></pre>
+            </div>
+
+            <h3>Ready-to-Use Chat Widget Code</h3>
+            <p>Copy and paste this complete code to add an AI chatbot to your website:</p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-label">Complete Chatbot Widget</span>
+                    <button class="copy-btn" data-code="complete-widget">Copy</button>
+                </div>
+<pre><code><span class="comment">/* HTML */</span>
+&lt;div class="simix-chat-container"&gt;
+  &lt;div class="simix-chat-header"&gt;
+    &lt;h3&gt;AI Assistant&lt;/h3&gt;
+  &lt;/div&gt;
+  &lt;div class="simix-chat-messages" id="simixChatMessages"&gt;
+    &lt;div class="simix-message simix-bot-message"&gt;
+      &lt;div class="simix-message-content"&gt;
+        Hello! How can I help you today?
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="simix-chat-input"&gt;
+    &lt;input type="text" id="simixUserInput" placeholder="Type your message..." /&gt;
+    &lt;button id="simixSendBtn"&gt;Send&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+<span class="comment">/* CSS */</span>
+&lt;style&gt;
+  .simix-chat-container {
+    width: 350px;
+    height: 500px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    background: white;
   }
-});</code></pre>
+
+  .simix-chat-header {
+    background: #4A6FFF;
+    color: white;
+    padding: 15px;
+  }
+
+  .simix-chat-header h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .simix-chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+  }
+
+  .simix-message {
+    margin-bottom: 15px;
+    display: flex;
+  }
+
+  .simix-message-content {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .simix-user-message {
+    justify-content: flex-end;
+  }
+
+  .simix-user-message .simix-message-content {
+    background: #4A6FFF;
+    color: white;
+    border-bottom-right-radius: 5px;
+  }
+
+  .simix-bot-message .simix-message-content {
+    background: #F0F2F5;
+    color: #333;
+    border-bottom-left-radius: 5px;
+  }
+
+  .simix-chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #E5E7EB;
+  }
+
+  .simix-chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #D1D5DB;
+    border-radius: 20px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .simix-chat-input button {
+    background: #4A6FFF;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0 15px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .simix-typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background: #F0F2F5;
+    border-radius: 18px;
+    width: fit-content;
+    border-bottom-left-radius: 5px;
+  }
+
+  .simix-typing-dot {
+    width: 8px;
+    height: 8px;
+    background: #999;
+    border-radius: 50%;
+    margin: 0 2px;
+    animation: simixTypingAnimation 1.4s infinite ease-in-out;
+  }
+
+  @keyframes simixTypingAnimation {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+&lt;/style&gt;
+
+<span class="comment">/* JavaScript */</span>
+&lt;script&gt;
+  document.addEventListener('DOMContentLoaded', function() {
+    const chatMessages = document.getElementById('simixChatMessages');
+    const userInput = document.getElementById('simixUserInput');
+    const sendButton = document.getElementById('simixSendBtn');
+    
+    // Maintain conversation history
+    let conversationHistory = [
+      { role: 'system', content: 'You are a helpful assistant.' }
+    ];
+
+    async function streamChatResponse(message) {
+      try {
+        const response = await fetch('https://simixchat.vercel.app', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-8b-instant', // Or any preferred model
+            messages: conversationHistory,
+            stream: true
+          })
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+        let fullResponse = '';
+
+        // Create typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'simix-typing-indicator';
+        for (let i = 0; i < 3; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'simix-typing-dot';
+          typingIndicator.appendChild(dot);
+        }
+        chatMessages.appendChild(typingIndicator);
+        
+        // Create bot message container
+        const botMessageDiv = document.createElement('div');
+        botMessageDiv.className = 'simix-message simix-bot-message';
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'simix-message-content';
+        
+        botMessageDiv.appendChild(messageContent);
+        
+        // Remove typing indicator after a brief delay
+        setTimeout(() => {
+          if (chatMessages.contains(typingIndicator)) {
+            chatMessages.removeChild(typingIndicator);
+            chatMessages.appendChild(botMessageDiv);
+          }
+        }, 1000);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value);
+          buffer += chunk;
+          
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+              try {
+                const data = JSON.parse(line.substring(6));
+                const content = data.choices[0].delta.content || '';
+                if (content) {
+                  fullResponse += content;
+                  messageContent.textContent += content;
+                  chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+              } catch (error) {
+                console.error('Error parsing streaming data:', error);
+              }
+            }
+          }
+        }
+        
+        // Add the full response to conversation history
+        conversationHistory.push({ role: 'assistant', content: fullResponse });
+        
+        return fullResponse;
+      } catch (error) {
+        console.error('Error:', error);
+        
+        // Add error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'simix-message simix-bot-message';
+        const errorContent = document.createElement('div');
+        errorContent.className = 'simix-message-content';
+        errorContent.textContent = 'Sorry, there was an error. Please try again.';
+        errorDiv.appendChild(errorContent);
+        chatMessages.appendChild(errorDiv);
+      }
+    }
+
+    function sendMessage() {
+      const message = userInput.value.trim();
+      if (message === '') return;
+      
+      // Add user message to chat
+      const userMessageDiv = document.createElement('div');
+      userMessageDiv.className = 'simix-message simix-user-message';
+      const messageContent = document.createElement('div');
+      messageContent.className = 'simix-message-content';
+      messageContent.textContent = message;
+      userMessageDiv.appendChild(messageContent);
+      chatMessages.appendChild(userMessageDiv);
+      
+      // Clear input
+      userInput.value = '';
+      
+      // Add to conversation history
+      conversationHistory.push({ role: 'user', content: message });
+      
+      // Keep history limited to last 10 messages to avoid context length issues
+      if (conversationHistory.length > 11) { // 1 system + 10 conversation turns
+        conversationHistory = [
+          conversationHistory[0], 
+          ...conversationHistory.slice(conversationHistory.length - 10)
+        ];
+      }
+      
+      // Stream response
+      streamChatResponse(message);
+      
+      // Scroll to bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Event listeners
+    sendButton.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  });
+&lt;/script&gt;</code></pre>
             </div>
         </div>
     </section>
@@ -972,7 +1213,7 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
                         <input type="text" id="userInput" placeholder="Type your message here..." />
                         <button id="sendMessage">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"/>
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2v6h4.01z" fill="white"/>
                             </svg>
                         </button>
                     </div>
@@ -999,7 +1240,7 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
                 </div>
                 <div class="faq-item">
                     <div class="faq-question">What's the difference between the available models?</div>
-                    <div class="faq-answer">The models vary in size (parameter count), specialization, and performance characteristics. Larger models like Llama-3-70B offer more capabilities but may have higher latency, while specialized models like Qwen-2.5-Coder excel at specific tasks like code generation.</div>
+                    <div class="faq-answer">The models vary in size (parameter count), specialization, and performance characteristics. Larger models like Llama-3 (70B variant) offer more capabilities but may have higher latency, while specialized models like Qwen excel at specific tasks like code generation.</div>
                 </div>
                 <div class="faq-item">
                     <div class="faq-question">Can I use the API for commercial applications?</div>
@@ -1022,12 +1263,10 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
         <div class="container">
             <svg width="180" height="50" viewBox="0 0 180 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20.5 10C14.7 10 10 14.7 10 20.5C10 26.3 14.7 31 20.5 31H29.5C30.9 31 32 32.1 32 33.5C32 34.9 30.9 36 29.5 36H10V41H29.5C33.6 41 37 37.6 37 33.5C37 29.4 33.6 26 29.5 26H20.5C17.5 26 15 23.5 15 20.5C15 17.5 17.5 15 20.5 15H40V10H20.5Z" fill="white"/>
-                <path d="M60.84 35.76C59.58 35.76 58.44 35.52 57.42 35.04C56.42 34.56 55.62 33.86 55.02 32.94C54.44 32 54.14 30.88 54.12 29.58H59.22C59.28 30.42 59.5 31.06 59.88 31.5C60.26 31.92 60.84 32.14 61.62 32.14C62.42 32.14 63.02 31.96 63.42 31.6C63.82 31.22 64.02 30.74 64.02 30.16C64.02 29.68 63.86 29.28 63.54 28.96C63.24 28.64 62.84 28.38 62.34 28.18C61.86 27.98 61.16 27.76 60.24 27.52C58.92 27.16 57.84 26.8 57 26.44C56.16 26.08 55.44 25.54 54.84 24.82C54.24 24.1 53.94 23.14 53.94 21.94C53.94 20.08 54.62 18.62 55.98 17.56C57.34 16.48 59.14 15.94 61.38 15.94C63.66 15.94 65.48 16.48 66.84 17.56C68.2 18.62 68.94 20.1 69.06 22H63.84C63.8 21.28 63.58 20.72 63.18 20.32C62.78 19.9 62.24 19.7 61.56 19.7C60.98 19.7 60.52 19.88 60.18 20.24C59.84 20.58 59.66 21.04 59.66 21.62C59.66 22.26 59.98 22.78 60.62 23.18C61.26 23.58 62.28 24 63.68 24.44C65 24.84 66.06 25.22 66.86 25.58C67.68 25.94 68.38 26.48 68.96 27.2C69.54 27.92 69.84 28.86 69.84 30.02C69.84 31.14 69.54 32.16 68.94 33.08C68.36 34 67.52 34.72 66.42 35.24C65.32 35.76 64.04 36.02 62.58 36.02C62.02 36.02 61.44 35.94 60.84 35.76Z" fill="white"/>
-                <path d="M78.3 33.48C76.96 32.56 76.16 31.24 75.92 29.52H80.76C80.84 30.16 81.12 30.66 81.6 31.04C82.08 31.4 82.68 31.58 83.4 31.58C84.04 31.58 84.54 31.46 84.88 31.22C85.24 30.98 85.42 30.66 85.42 30.26C85.42 29.78 85.16 29.42 84.64 29.18C84.12 28.94 83.26 28.68 82.06 28.4C80.78 28.12 79.72 27.82 78.88 27.52C78.04 27.2 77.3 26.7 76.66 26.02C76.04 25.34 75.72 24.42 75.72 23.26C75.72 22.26 76 21.36 76.56 20.56C77.14 19.76 77.96 19.12 79.02 18.64C80.08 18.16 81.32 17.92 82.74 17.92C84.92 17.92 86.62 18.44 87.84 19.48C89.08 20.52 89.74 21.92 89.84 23.68H85.32C85.26 23.04 85 22.54 84.54 22.18C84.1 21.82 83.52 21.64 82.8 21.64C82.2 21.64 81.74 21.76 81.42 22C81.1 22.22 80.94 22.52 80.94 22.9C80.94 23.38 81.2 23.74 81.72 23.98C82.26 24.22 83.1 24.48 84.24 24.76C85.56 25.08 86.62 25.4 87.44 25.72C88.26 26.04 88.98 26.56 89.6 27.26C90.22 27.94 90.54 28.86 90.56 30.02C90.56 31.04 90.28 31.96 89.7 32.78C89.14 33.58 88.3 34.22 87.18 34.7C86.08 35.18 84.8 35.42 83.34 35.42C81.94 35.42 80.04 35.02 78.3 33.48Z" fill="white"/>
-                <path d="M102.84 25.78C103.7 25.86 104.42 25.44 105 24.52C105.58 23.6 105.88 22.22 105.88 20.38C105.88 18.78 105.62 17.54 105.1 16.64C104.58 15.74 103.86 15.14 102.96 14.84C102.06 14.54 100.94 14.26 99.6 14C98.26 13.74 97.1 13.46 96.14 13.16C95.18 12.86 94.34 12.38 93.6 11.7C92.88 11.02 92.52 10.1 92.52 8.94C92.52 7.18 93.1 5.8 94.26 4.8C95.44 3.78 97.04 3.28 99.08 3.28C100.94 3.28 100.48 3.32 101.62 3.72C102.76 4.12 103.66 4.84 104.32 5.9C104.98 6.94 105.3 8.36 105.3 10.16H100.48C100.48 9.02 100.28 8.16 99.88 7.6C99.5 7.04 98.92 6.76 98.16 6.76C97.44 6.76 96.88 7 96.5 7.48C96.12 7.94 95.94 8.6 95.94 9.46C95.94 10.22 96.16 10.8 96.6 11.2C97.04 11.6 97.58 11.86 98.22 11.98C98.86 12.1 99.68 12.28 100.68 12.52C101.82 12.78 102.66 12.96 103.2 13.06C103.74 13.14 104.36 13.32 105.04 13.6C105.74 13.88 106.36 14.22 106.9 14.64C107.46 15.06 107.94 15.62 108.34 16.34C108.76 17.06 109.08 17.9 109.3 18.86C109.54 19.82 109.66 20.92 109.66 22.16C109.66 25.58 108.78 28.1 107.04 29.72C105.3 31.34 102.72 32.14 99.3 32.14C97.14 32.14 95.34 31.8 93.88 31.12C92.44 30.44 91.34 29.36 90.58 27.88C89.84 26.4 89.46 24.48 89.46 22.12H94.34C94.38 24.02 94.74 25.38 95.42 26.18C96.12 26.98 97.12 27.38 98.42 27.38C99.52 27.38 100.32 27.08 100.82 26.48C101.32 25.88 101.58 24.96 101.6 23.72C101.62 22.62 101.5 21.8 101.26 21.28C101.02 20.76 100.72 20.46 100.34 20.38H99.46C98.98 20.38 98.52 20.38 98.08 20.38C97.64 20.38 97.22 20.4 96.82 20.44C96.42 20.46 96.04 20.52 95.66 20.62C95.3 20.72 94.98 20.8 94.7 20.88L94.28 16.84C94.54 16.8 94.9 16.72 95.36 16.6C95.82 16.48 96.3 16.38 96.8 16.28C97.3 16.18 97.7 16.12 98 16.1C98.3 16.06 98.56 16.04 98.78 16.04C98.82 16.04 98.9 16.04 99.02 16.04C99.14 16.04 99.24 16.04 99.32 16.04C99.6 16.04 100.4 16.04 101.72 16.04C103.04 16.04 103.86 16.04 104.16 16.04H107.3L106.88 20.44C106.14 20.44 105.28 20.5 104.32 20.62C103.36 20.74 102.68 20.92 102.28 21.16C101.5 21.62 101.08 22.34 101.02 23.32C100.98 24.3 102.84 25.78 102.84 25.78Z" fill="white"/>
+                <path d="M60.84 25.78C103.7 25.86 104.42 25.44 105 24.52C105.58 23.6 105.88 22.22 105.88 20.38C105.88 18.78 105.62 17.54 105.1 16.64C104.58 15.74 103.86 15.14 102.96 14.84C102.06 14.54 100.94 14.26 99.6 14C98.26 13.74 97.1 13.46 96.14 13.16C95.18 12.86 94.34 12.38 93.6 11.7C92.88 11.02 92.52 10.1 92.52 8.94C92.52 7.18 93.1 5.8 94.26 4.8C95.44 3.78 97.04 3.28 99.08 3.28C100.94 3.28 100.48 3.32 101.62 3.72C102.76 4.12 103.66 4.84 104.32 5.9C104.98 6.94 105.3 8.36 105.3 10.16H100.48C100.48 9.02 100.28 8.16 99.88 7.6C99.5 7.04 98.92 6.76 98.16 6.76C97.44 6.76 96.88 7 96.5 7.48C96.12 7.94 95.94 8.6 95.94 9.46C95.94 10.22 96.16 10.8 96.6 11.2C97.04 11.6 97.58 11.86 98.22 11.98C98.86 12.1 99.68 12.28 100.68 12.52C101.82 12.78 102.66 12.96 103.2 13.06C103.74 13.14 104.36 13.32 105.04 13.6C105.74 13.88 106.36 14.22 106.9 14.64C107.46 15.06 107.94 15.62 108.34 16.34C108.76 17.06 109.08 17.9 109.3 18.86C109.54 19.82 109.66 20.92 109.66 22.16C109.66 25.58 108.78 28.1 107.04 29.72C105.3 31.34 102.72 32.14 99.3 32.14C97.14 32.14 95.34 31.8 93.88 31.12C92.44 30.44 91.34 29.36 90.58 27.88C89.84 26.4 89.46 24.48 89.46 22.12H94.34C94.38 24.02 94.74 25.38 95.42 26.18C96.12 26.98 97.12 27.38 98.42 27.38C99.52 27.38 100.32 27.08 100.82 26.48C101.32 25.88 101.58 24.96 101.6 23.72C101.62 22.62 101.5 21.8 101.26 21.28C101.02 20.76 100.72 20.46 100.34 20.38H99.46C98.98 20.38 98.52 20.38 98.08 20.38C97.64 20.38 97.22 20.4 96.82 20.44C96.42 20.46 96.04 20.52 95.66 20.62C95.3 20.72 94.98 20.8 94.7 20.88L94.28 16.84C94.54 16.8 94.9 16.72 95.36 16.6C95.82 16.48 96.3 16.38 96.8 16.28C97.3 16.18 97.7 16.12 98 16.1C98.3 16.06 98.56 16.04 98.78 16.04C98.82 16.04 98.9 16.04 99.02 16.04C99.14 16.04 99.24 16.04 99.32 16.04C99.6 16.04 100.4 16.04 101.72 16.04C103.04 16.04 103.86 16.04 104.16 16.04H107.3L106.88 20.44C106.14 20.44 105.28 20.5 104.32 20.62C103.36 20.74 102.68 20.92 102.28 21.16C101.5 21.62 101.08 22.34 101.02 23.32C100.98 24.3 102.84 25.78 102.84 25.78Z" fill="white"/>
                 <path d="M117.318 14.36V18.32H123.438V21.94H117.318V31.6H112.818V10.74H124.677V14.36H117.318Z" fill="white"/>
                 <path d="M130.158 35C129.138 35 128.258 34.8 127.518 34.4C126.798 34 126.218 33.5 125.778 32.9C125.358 32.28 125.058 31.64 124.878 30.98C124.698 30.3 124.598 29.66 124.578 29.06C124.558 28.44 124.558 27.96 124.578 27.62L125.658 19.3H130.278L129.198 27.8C129.178 28.04 129.178 28.32 129.198 28.64C129.218 28.96 129.298 29.26 129.438 29.56C129.578 29.84 129.818 30.08 130.158 30.28C130.498 30.48 130.978 30.58 131.598 30.58C132.398 30.58 133.078 30.36 133.638 29.92C134.218 29.48 134.658 28.9 134.958 28.18C135.258 27.44 135.458 26.66 135.558 25.84C135.658 25 135.698 24.2 135.678 23.44L136.278 18.32H140.898L138.978 35H134.598L134.958 32.12C134.278 33.08 133.378 33.82 132.258 34.34C131.158 34.86 130.318 35 129.198 35H130.158Z" fill="white"/>
-                <path d="M153.839 25.3C153.839 26.18 153.699 27.04 153.419 27.88C153.159 28.72 152.719 29.48 152.099 30.16C151.499 30.84 150.699 31.36 149.699 31.72C148.699 32.08 147.479 32.26 146.039 32.26C144.919 32.26 143.959 32.14 143.159 31.9C142.359 31.64 141.659 31.32 141.059 30.94C140.979 30.88 140.919 30.84 140.879 30.82L141.059 35H136.619L138.839 16.34H143.219L142.879 18.38C143.679 17.54 144.559 16.88 145.519 16.4C146.499 15.92 147.419 15.68 148.279 15.68C149.499 15.68 150.479 15.94 151.219 16.46C151.959 16.98 152.499 17.66 152.839 18.5C153.199 19.34 153.419 20.24 153.499 21.2C153.599 22.14 153.639 23.06 153.619 23.96C153.599 24.86 153.739 25.3 153.739 25.3H153.839ZM149.039 23.72C149.079 22.8 149.019 21.96 148.859 21.2C148.699 20.44 148.439 19.84 148.079 19.4C147.719 18.94 147.199 18.72 146.519 18.72C145.939 18.72 145.319 18.94 144.659 19.38C144.019 19.82 143.579 20.44 143.339 21.24C143.099 22.02 142.999 22.78 143.039 23.52C143.059 23.82 143.079 24.14 143.099 24.48C143.139 24.82 143.199 25.16 143.279 25.5C143.359 25.82 143.479 26.12 143.639 26.4C143.799 26.68 144.019 26.9 144.299 27.08C144.579 27.26 144.939 27.34 145.379 27.34C146.239 27.34 146.959 27.02 147.539 26.38C148.119 25.72 148.479 24.9 148.619 23.92C148.659 23.84 149.039 23.72 149.039 23.72Z" fill="white"/>
+                <path d="M153.839 16.34L151.239 21.26H148.979C148.679 21.26 148.179 21.26 147.479 21.26C146.779 21.26 146.239 21.26 145.859 21.26C145.239 21.26 144.739 21.32 144.359 21.44C143.979 21.56 143.679 21.74 143.459 21.98C143.239 22.2 143.079 22.48 142.979 22.82C142.879 23.14 142.819 23.5 142.799 23.9C142.779 24.3 142.759 24.74 142.739 25.22C142.719 25.7 142.699 26.2 142.679 26.72C142.639 27.24 142.599 27.76 142.559 28.28C142.519 28.8 142.439 30.52 142.319 30.9L141.399 31.96H136.779L138.839 16.34H143.219L142.759 19.22C143.519 18.16 144.379 17.36 145.339 16.82C146.299 16.28 147.359 16 148.519 16H152.079V16.34Z" fill="white"/>
                 <path d="M172.079 16.34L171.239 21.26H168.979C168.679 21.26 168.179 21.26 167.479 21.26C166.779 21.26 166.239 21.26 165.859 21.26C165.239 21.26 164.739 21.32 164.359 21.44C163.979 21.56 163.679 21.74 163.459 21.98C163.239 22.2 163.079 22.48 162.979 22.82C162.879 23.14 162.819 23.5 162.799 23.9C162.779 24.3 162.759 24.74 162.739 25.22C162.719 25.7 162.699 26.2 162.679 26.72C162.639 27.24 162.599 27.76 162.559 28.28C162.519 28.8 162.439 30.52 162.319 30.9L161.399 31.96H156.779L158.839 16.34H163.219L162.759 19.22C163.519 18.16 164.379 17.36 165.339 16.82C166.299 16.28 167.359 16 168.519 16H172.079V16.34Z" fill="white"/>
             </svg>
 
@@ -1089,87 +1328,101 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
             });
         });
 
-        // Demo chat functionality
+        // Demo chat functionality - now uses real API
         const chatMessages = document.getElementById('chatMessages');
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendMessage');
 
-        // Mock SimixChat API for demo
-        const mockSimixChatAPI = {
-            async createChatCompletion(params) {
-                // Display typing indicator
+        // Streaming implementation for SimixChat API
+        async function streamChatWithAI(message, onChunk) {
+            try {
+                const response = await fetch('https://simixchat.vercel.app', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.1-8b-instant',
+                        messages: [
+                            { role: 'system', content: 'You are a helpful assistant powered by SimixChat API.' },
+                            { role: 'user', content: message }
+                        ],
+                        stream: true
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let buffer = '';
+                let fullResponse = '';
+
+                // Create typing indicator
                 const typingIndicator = document.createElement('div');
                 typingIndicator.className = 'typing-indicator';
                 for (let i = 0; i < 3; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'typing-dot';
-                    typingIndicator.appendChild(dot);
+                  const dot = document.createElement('div');
+                  dot.className = 'typing-dot';
+                  typingIndicator.appendChild(dot);
                 }
                 chatMessages.appendChild(typingIndicator);
                 
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Create bot message container
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'message bot-message';
                 
-                // Pre-defined responses for demo purposes
-                const responses = {
-                    "hello": "Hello there! How can I assist you today?",
-                    "hi": "Hi! I'm here to help. What would you like to know?",
-                    "how are you": "I'm just a program, but I'm functioning well, thank you! How can I help you?",
-                    "what is simixchat": "SimixChat is a free API service that provides access to powerful language models like Llama-3, Mistral, Qwen, and more. You can use it to build AI-powered features in your applications with simple JavaScript or Python integration.",
-                    "models": "SimixChat offers several models including Llama-3 (8B and 70B variants), Mistral Saba 24B, Qwen 2.5 Coder, and more. Each has different strengths - some are optimized for speed, others for reasoning ability or code generation.",
-                    "code example": "Here's a simple example to get started:\n\nconst simixchat = new SimixChatAPI({\n  model: 'llama-3-8b-8192'\n});\n\nasync function chatWithAI() {\n  const response = await simixchat.createChatCompletion({\n    messages: [\n      { role: 'user', content: 'Hello!' }\n    ]\n  });\n  console.log(response.choices[0].message.content);\n}",
-                    "help": "I can provide information about SimixChat API, available models, code examples, or answer other questions you might have. Try asking something specific!"
-                };
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
                 
-                // Remove typing indicator
-                chatMessages.removeChild(typingIndicator);
+                botMessageDiv.appendChild(messageContent);
                 
-                // Generate a somewhat intelligent response
-                const userMessage = params.messages[params.messages.length - 1].content.toLowerCase();
-                let response = "I'm an AI assistant powered by SimixChat. I can help answer questions about the API, provide code examples, or assist with other inquiries. What would you like to know?";
-                
-                // Check for exact matches
-                for (const [key, value] of Object.entries(responses)) {
-                    if (userMessage.includes(key)) {
-                        response = value;
-                        break;
-                    }
-                }
-                
-                // Handle some common questions
-                if (userMessage.includes("javascript") || userMessage.includes("js") || userMessage.includes("code")) {
-                    response = responses["code example"];
-                } else if (userMessage.includes("model") || userMessage.includes("llama") || userMessage.includes("mistral")) {
-                    response = responses["models"];
-                } else if (userMessage.includes("what is") || userMessage.includes("about") || userMessage.includes("explain")) {
-                    response = responses["what is simixchat"];
-                }
-                
-                return {
-                    choices: [
-                        {
-                            message: {
-                                content: response
-                            }
-                        }
-                    ]
-                };
-            }
-        };
+                // Remove typing indicator after a brief delay
+                setTimeout(() => {
+                  if (chatMessages.contains(typingIndicator)) {
+                    chatMessages.removeChild(typingIndicator);
+                    chatMessages.appendChild(botMessageDiv);
+                  }
+                }, 1000);
 
-        function addMessageToChat(content, isUser = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'} animate-fade-in`;
-            
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
-            messageContent.textContent = content;
-            
-            messageDiv.appendChild(messageContent);
-            chatMessages.appendChild(messageDiv);
-            
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  
+                  const chunk = decoder.decode(value);
+                  buffer += chunk;
+                  
+                  const lines = buffer.split('\n');
+                  buffer = lines.pop() || '';  // Keep the last incomplete line in buffer
+                  
+                  for (const line of lines) {
+                    if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                      try {
+                        const data = JSON.parse(line.substring(6));
+                        const content = data.choices[0].delta.content || '';
+                        if (content) {
+                          fullResponse += content;
+                          messageContent.textContent += content;
+                          chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                      } catch (error) {
+                        console.error('Error parsing streaming data:', error);
+                      }
+                    }
+                  }
+                }
+                
+                return fullResponse;
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Add error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message bot-message';
+                const errorContent = document.createElement('div');
+                errorContent.className = 'message-content';
+                errorContent.textContent = 'Sorry, there was an error. Please try again.';
+                errorDiv.appendChild(errorContent);
+                chatMessages.appendChild(errorDiv);
+            }
         }
 
         async function sendMessage() {
@@ -1177,22 +1430,32 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
             if (message === '') return;
             
             // Add user message to chat
-            addMessageToChat(message, true);
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = message;
+            userMessageDiv.appendChild(messageContent);
+            chatMessages.appendChild(userMessageDiv);
+            
+            // Clear input
             userInput.value = '';
             
-            // Get response from mock API
-            try {
-                const response = await mockSimixChatAPI.createChatCompletion({
-                    messages: [
-                        { role: 'user', content: message }
-                    ]
-                });
+            // Stream response
+            streamChatWithAI(message, (chunk) => {
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'message bot-message animate-fade-in';
                 
-                addMessageToChat(response.choices[0].message.content);
-            } catch (error) {
-                console.error('Error:', error);
-                addMessageToChat('Sorry, there was an error processing your request.');
-            }
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                messageContent.textContent = chunk;
+                
+                botMessageDiv.appendChild(messageContent);
+                chatMessages.appendChild(botMessageDiv);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
         }
 
         sendButton.addEventListener('click', sendMessage);
@@ -1219,4 +1482,3 @@ simixchat = <span class="yellow">SimixChatAPI</span>(
     </script>
 </body>
 </html>
-
